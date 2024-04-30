@@ -1,0 +1,150 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Loading Iris Dataset
+df=pd.read_csv("iris.csv")
+# Displaying first 5 rows
+df.head(5)
+# Checking missing values
+df.isnull().sum() # (In this Dataset there is no missing value)
+# Summary of Dataset
+df.describe()  # BY default take numerical column only
+
+# Selecting subset of column using label based indexing
+label_based_df=df[["petal_length","sepal_length","species"]]
+# Selecting subset of column using position based indexing
+index_based_df=df.iloc[:,[0,2,4]]
+# Creating new dataframe by filtering rows
+new_df=df[df["species"]=="Iris-virginica"]
+
+
+# Task-2
+df=pd.read_csv("iris.csv")
+# Checking missing values
+df.isnull().sum() # (In this Dataset there is no missing value)
+# Creating a new column by applying mathematical operation
+df["Total_length"]=df["sepal_length"]+df["petal_length"]
+# Converting cateogrical column into numerical Representation
+one_hot_encoded_data = pd.get_dummies(df, columns = ["species"])
+# grouping dataset by specific column and applying aggregate function
+df_mean=df.groupby("species").mean()
+df_count=df.groupby("species").count()
+df_sum=df.groupby("species").sum()
+# Represnting in meaninful way
+df_mean.rename(columns={"petal_length":"petal_length_mean","petal_width":"petal_width_mean","sepal_length":"sepal_length_mean","sepal_width":"sepal_width_mean","Total_length":"Total_length_mean"})
+df_count.rename(columns={"petal_length":"petal_length_count","petal_width":"petal_width_count","sepal_length":"sepal_length_count","sepal_width":"sepal_width_count","Total_length":"Total_length_count"})
+df_sum.rename(columns={"petal_length":"petal_length_sum","petal_width":"petal_width_sum","sepal_length":"sepal_length_sum","sepal_width":"sepal_width_sum","Total_length":"Total_length_sum"})
+
+
+# Task-3
+# Merge two different dataset using various type of join
+df1=pd.read_csv("2017.csv")
+df2=pd.read_csv("gapminder_full.csv")
+df2.rename(columns={"country":"Country"},inplace=True)
+merged_inner=pd.merge(df1,df2,on="Country",how="inner")
+merged_left=pd.merge(df1,df2,on="Country",how="left")
+merged_right=pd.merge(df1,df2,on="Country",how="right")
+merged_outer=pd.merge(df1,df2,on="Country",how="outer")
+
+# Impact of each type of join
+
+# Inner Join: Only the rows with matching country values in both datasets are included in the result. Rows with non-matching country values are excluded.
+# Left Join: All rows from the left dataset (df1) are included, and matching rows from the right dataset (df2) are added. If there is no match in the right dataset, NaN values are filled.
+# Right Join: All rows from the right dataset (df2) are included, and matching rows from the left dataset (df1) are added. If there is no match in the left dataset, NaN values are filled.
+# Outer Join: All rows from both datasets are included. If there is a match, values are filled; otherwise, NaN values are used.
+
+# Task-4
+tips = sns.load_dataset("tips")
+sns.barplot(x="day", y="total_bill", data=tips,ci=None)
+plt.title('Bar Plot - Total Bill Amount by Day')
+plt.show()
+sns.lineplot(x="time", y="total_bill", data=tips,ci=None)
+plt.title('Line Plot - Total Bill Amount by Time')
+plt.show()
+sns.scatterplot(x="total_bill", y="tip", data=tips)
+plt.title('Scatter Plot - Total Bill Amount vs. Tip Amount')
+plt.show()
+tips.head()
+
+correlation_matrix = tips[["total_bill","tip","size"]].corr()
+# Ploting the correlation matrix using a heatmap
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+
+plt.title('Correlation Matrix')
+plt.show()
+sns.boxplot(x="day", y="total_bill", data=tips)
+plt.title('Box Plot - Distribution of Total Bill Amount by Day')
+plt.show()
+sns.histplot(tips['total_bill'], kde=True)
+
+# Task-5
+# Creating a numpy array
+arr=np.array([1,2,3,4,5,6,7,8,9,10])
+arr2=np.array([11,12,13,14,15,16,17,18,19,20])
+# Performing Add,subtract,multiply,and divide on these arrays
+add_arr=np.add(arr,arr2)
+print(add_arr)
+subtract_arr=np.subtract(arr2,arr)
+print(subtract_arr)
+multiply_arr=np.multiply(arr,arr2)
+print(multiply_arr)
+divide_arr=np.divide(arr2,arr)
+print(divide_arr)
+
+# Task-6
+# Reshaping array into (2,5)
+res_arr=np.reshape(arr,(2,5))
+# Transpose Matrix
+trans_arr=np.transpose(res_arr)
+# Flattening the transposed matrix in 1D array
+flatten_arr=trans_arr.flatten()
+# Stacking arr ,arr2 vertically
+stacked_arr=np.vstack((arr,arr2))  # array dimension/shape should be same
+print(stacked_arr)
+
+# Task-7
+# Calculating mean ,median,standard deviation
+mean_of_arr=arr.mean()
+median_of_arr=np.median(arr)
+standard_dev_of_array=np.std(arr)
+# Finding max and min of arr
+max_arr=arr.max()
+min_arr=arr.min()
+# Normalising array
+normalised_arr=(arr-mean_of_arr)/standard_dev_of_array
+
+
+# Task-8
+# Creating bool arr for element greater than 5
+bool_arr=arr>5
+#  Using  boolean indexing to extract elements greater than 5
+arr_greater=arr[bool_arr]
+# Task-9
+# Generate a 3x3 matrix with random values between 0 and 1.
+arr3=np.random.rand(3,3)
+# Create an array of 10 random integers between 1 and 100.
+rand_int_arr=np.random.randint(1,100,size=10)
+#Shuffle the elements of 'arr' randomly.
+np.random.shuffle(arr)  #Keep in mind that np.random.shuffle modifies the input array in-place
+arr
+
+# Task-10
+# Calculating sqrt of each element in arr
+square_root_arr=np.sqrt(arr)
+# Calculating exponent of each element of array
+exp_arr=np.exp(arr)
+# Task-11
+# Create a 3x3 matrix 'mat_a' with random values.
+mat_a=np.random.rand(3,3)
+# Create a 3x1 matrix 'vec_b' with random values.
+vec_b=np.random.rand(3,1)
+# .Multiply 'mat_a' and 'vec_b' using the dot product.
+dot_arr=np.dot(mat_a,vec_b)
+# Task-12
+matrix = np.array([[1, 2, 3],
+                   [4, 5, 6],
+                   [7, 8, 9]])
+mean_subtracted_matrix = matrix - np.mean(matrix, axis=1, keepdims=True)
+mean_subtracted_matrix
