@@ -1,0 +1,91 @@
+import numpy as np
+from sklearn import datasets
+iris = datasets.load_iris()
+X = iris.data # features, 'sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)'
+y = iris.target # label, 'setosa' 'versicolor' 'virginica'
+re_y = np.array([1 if i==0 else 0 for i in y]) # relabel, 'setosa':1, 'not setosa':0
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+def relu(x):
+    return np.maximum(0, x)
+
+def relu_derivative(x):
+    return np.where(x > 0, 1, 0)
+
+def softmax(x):
+    exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
+    return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+
+def softmax_derivative(x):
+    return x * (1 - x)
+def initialize_weights(layers):
+    weights = []
+    for i in range(1, len(layers)):
+        weights.append(np.random.randn(layers[i-1], layers[i]))
+    return weights
+def forward_propagation(inputs, weights, activation_func):
+    layer_outputs = [inputs]
+    for i in range(len(weights)):
+        inputs = activation_func(np.dot(inputs, weights[i]))
+        layer_outputs.append(inputs)
+    return layer_outputs
+def backward_propagation(inputs, outputs, targets, weights, learning_rate, activation_derivative):
+    errors = [targets - outputs[-1]]
+    for i in range(len(weights)-1, 0, -1):
+        error = np.dot(errors[0], weights[i].T)
+        errors.insert(0, error * activation_derivative(outputs[i]))
+    for i in range(len(weights)):
+        weights[i] += learning_rate * np.dot(outputs[i].T, errors[i])
+def train_neural_network(inputs, targets, layers, activation_func, learning_rate, epochs):
+    weights = initialize_weights(layers)
+
+    for epoch in range(epochs):
+        for i in range(len(inputs)):
+            current_input = np.array([inputs[i]])
+            current_target = np.array([targets[i]])
+
+            # Forward propagation
+            outputs = forward_propagation(current_input, weights, activation_func)
+
+            # Backward propagation
+            backward_propagation(current_input, outputs, current_target, weights, learning_rate, activation_derivative)
+
+    return weights
+#input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+input_data = X
+# target_data = np.array([[0], [1], [1], [0]])
+target_data = re_y
+num_layers = int(input("Enter the number of layers: "))
+neurons_per_layer = [int(input(f"Enter the number of neurons in layer {i+1}: ")) for i in range(num_layers)]
+activation_function = input("Enter the activation function (sigmoid or relu): ")
+learning_rate = float(input("Enter the learning rate: "))
+epochs = int(input("Enter the number of epochs: "))
+
+
+if activation_function == "sigmoid":
+    activation_func = sigmoid
+    activation_derivative = sigmoid_derivative
+elif activation_function == "relu":
+    activation_func = relu
+    activation_derivative = relu_derivative
+elif activation_function == "softmax":
+    activation_func = softmax
+    activation_derivative = "softmax_derivative"
+else:
+    print("Invalid activation function. Please choose 'sigmoid' or 'relu'.")
+    exit()
+
+# Train the neural network
+trained_weights = train_neural_network(input_data, target_data, neurons_per_layer, activation_func, learning_rate, epochs)
+
+# Test the trained neural network (forward propagation)
+for i in range(len(input_data)):
+    test_input = np.array([input_data[i]])
+    predicted_output = forward_propagation(test_input, trained_weights, activation_func)[-1]
+    print(f"Input: {input_data[i]}, Predicted Output: {predicted_output}")
+
+  
